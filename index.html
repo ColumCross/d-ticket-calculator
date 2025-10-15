@@ -6,6 +6,7 @@
         <title>Deutschlandticket Calculator</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/x-icon" href="placeholder_logo.png">
 
       <script src="main.js"></script>
     </head>
@@ -14,12 +15,17 @@
       <h3>By <a href="http://columcross.com" target="_blank">Colum Cross</a></h3>
       <p>This site tallies up the cost of every DB trip you have taken over the month and tells you how much money you saved by having a Deutschlandticket.</p>
   <p>This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.</p>
-      <p>This is currently version 0. In this version you are able to manually calculate the savings you have generated on your D-Ticket. There is no styling on the web page at all.</p>
+      <p>This is currently version 0.1. In this version you are able to manually calculate the savings you have generated on your D-Ticket. You can add and remove the fares you enter from the list. There is no styling on the web page at all.</p>
       <div>
-        <p>Current cost of a D-Ticket: <input type="text" id="dticket" value="58"/>€</p>
+        <p>Current cost of a D-Ticket: <input type="number" id="dticket" value="58"/>€</p>
         <p>Entered fares:</p>
         <ul id="fareList"></ul>
-        <p id="newTicket">Add a single fare ride here: <input type="text" id="newFare" />€ <button type="button" onClick="calculateFare()">Add</button></p>
+        <p id="newTicket">Add a single fare ride here:</p>
+        <p>Origin: <input type="text" id="origin" /> Destination: <input type="text" id="destination" /> Fare: <input type="number" id="newFare" />€</p>
+        <p>
+          <button type="button" onClick="addFare()">Add Fare</button>
+          <input type="checkbox" id="clearValues" name="clearValues" /><label for="clearValues">Preserve values upon entry</label>
+        </p>
         <p>Total savings this month: <span id="totalSavings">Add some fares to calculate savings!</span></p>
       </div>
     </body>
