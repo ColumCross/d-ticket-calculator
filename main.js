@@ -5,13 +5,46 @@
  * 
  * Start with just a simple function that calculates when the add button is clicked.
  */
+
 var totalFareCost = 0;
+
+// Takes the information from the input boxes and posts the fare.
 function addFare() {
   const fare = isNaN(parseFloat(document.getElementById("newFare").value)) ? 0 : parseFloat(document.getElementById("newFare").value);
+  const origin = document.getElementById("origin").value;
+  const destination = document.getElementById("destination").value;
 
-  
+  postFare(origin, destination, fare);
+  saveFares();
+
+  if(!document.getElementById("clearValues").checked) {
+    document.getElementById("origin").value = '';
+    document.getElementById("destination").value = '';
+    document.getElementById("newFare").value = '';
+  }
+
+}
+
+// Visually removes the selected fare from the entered fares list.
+function removeFare(listElement, fare) {
+  listElement.parentNode.removeChild(listElement);
+  const fareToRemove = 0 - parseFloat(fare);
+  calculateFare(fareToRemove);
+  saveFares();
+}
+
+// Generates a new fare total based on the totalFareCost and visually updates the page.
+function calculateFare(fare) {
+  totalFareCost += fare;
+  const newTotal = totalFareCost - parseFloat(document.getElementById("dticket").value);
+  document.getElementById("totalSavings").innerHTML = newTotal + "€";
+}
+
+// Visually adds a single fare to the Entered Fares section of the page.
+function postFare(origin, destination, fare) {
+  // Physically adds a fare to the page.
   const elem = document.createElement("li");
-  const itemText = document.getElementById("origin").value + " -> " + document.getElementById("destination").value + ": " + fare + "€ ";
+  const itemText = origin + " -> " + destination + ": " + fare + "€ ";
   const newItem = document.createTextNode(itemText);
   elem.appendChild(newItem);
 
@@ -22,23 +55,24 @@ function addFare() {
   elem.appendChild(removeButton);
 
   document.getElementById("fareList").appendChild(elem);
-  
+
   calculateFare(fare);
+}
 
-  if(!document.getElementById("clearValues").checked) {
-    document.getElementById("origin").value = '';
-    document.getElementById("destination").value = '';
-    document.getElementById("newFare").value = '';
-  }
 
+// Function that will run on load to pull all the fares from cookies.
+// Instead of manually posting each fare one by one, the fares will be saved as a snapshot of the list and just added like that.
+function loadFares() {
+  document.getElementById("fareList").innerHTML = localStorage.getItem("fares");
+  const storedTotalFareCost = parseFloat(localStorage.getItem("totalFareCost"));
+  if(!isNaN(storedTotalFareCost)) calculateFare(storedTotalFareCost);
 }
-function removeFare(listElement, fare) {
-  listElement.parentNode.removeChild(listElement);
-  const fareToRemove = 0 - parseFloat(fare);
-  calculateFare(fareToRemove);
+
+// Function that takes all the fares in the the list and saves them.
+// Instead of saving each fare individually or even as a JSON object. Just save it as the html text of the list.
+function saveFares() {
+  // Function to manually save all the fares currently in the fare thing.
+  localStorage.setItem("fares", document.getElementById("fareList").innerHTML);
+  localStorage.setItem("totalFareCost", totalFareCost);
 }
-function calculateFare(fare) {
-  totalFareCost += fare;
-  const newTotal = totalFareCost - parseFloat(document.getElementById("dticket").value);
-  document.getElementById("totalSavings").innerHTML = newTotal + "€";
-}
+
