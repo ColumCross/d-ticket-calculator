@@ -1,14 +1,11 @@
-/*
- * @desc: needs to calculate stuff
- * Store data in local storage.
- * Hold a price of the cost of a D-ticket.
- * 
- * Start with just a simple function that calculates when the add button is clicked.
- */
 
 var totalFareCost = 0;
 
-// Takes the information from the input boxes and posts the fare.
+/*
+* Pulls the information from the input boxes and then posts a fare to the page.
+* Saves the fares in localStorage.
+* Clears the input boxes if needed.
+*/
 function addFare() {
   const fare = isNaN(parseFloat(document.getElementById("newFare").value)) ? 0 : parseFloat(document.getElementById("newFare").value);
   const origin = document.getElementById("origin").value;
@@ -76,3 +73,12 @@ function saveFares() {
   localStorage.setItem("totalFareCost", totalFareCost);
 }
 
+/*
+* @name: clearData
+* @desc: clears out the data from localStorage and refreshes the page.
+*/
+function clearData() {
+  localStorage.removeItem("fares");
+  localStorage.removeItem("totalFareCost");
+  window.location.reload();
+}

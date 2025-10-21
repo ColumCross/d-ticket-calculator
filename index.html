@@ -13,9 +13,7 @@
     <body onLoad="loadFares()">
       <h1>Deutschlandticket Calculator</h1>
       <h3>By <a href="http://columcross.com" target="_blank">Colum Cross</a></h3>
-      <p>This site tallies up the cost of every DB trip you have taken over the month and tells you how much money you saved by having a Deutschlandticket.</p>
-  <p>This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.</p>
-      <p>This is currently version 1.1. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list. There is no styling on the web page at all.</p>
+      <p><a href="about.html">About Page</a></p>
       <div>
         <p>Current cost of a D-Ticket: <input type="number" id="dticket" value="58"/>€</p>
         <fieldset>
@@ -32,6 +30,7 @@
           <legend>Entered fares:</legend>
           <ul id="fareList"></ul>
         </fieldset>
+        <p><button type="button" onClick="clearData()">Delete all data</button></p>
       </div>
     </body>
 </html>
