@@ -33,7 +33,7 @@ function removeFare(listElement, fare) {
 // Generates a new fare total based on the totalFareCost and visually updates the page.
 function calculateFare(fare) {
   totalFareCost += fare;
-  const newTotal = totalFareCost - parseFloat(document.getElementById("dticket").value);
+  const newTotal = (totalFareCost - parseFloat(document.getElementById("dticket").value)).toFixed(2);
   document.getElementById("totalSavings").innerHTML = newTotal + "€";
 }
 
