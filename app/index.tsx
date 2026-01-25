@@ -1,3 +1,5 @@
+import { faTicket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
@@ -152,7 +154,14 @@ export default function HomeScreen() {
           sx={textFieldStyles}
         />
         <FormControlLabel 
-          control={<Checkbox checked={scanned} onChange={(e) => setScanned(e.target.checked)} />} 
+          control={
+            <Checkbox 
+              checked={scanned} 
+              onChange={(e) => setScanned(e.target.checked)}
+              icon={<CheckboxIcon checked={false} />}
+              checkedIcon={<CheckboxIcon checked={true} />}
+              sx={checkboxStyles} 
+            />} 
           label="Ticket was Scanned"
           sx={{
             '& .MuiFormControlLabel-label': {
@@ -165,10 +174,10 @@ export default function HomeScreen() {
       <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
         <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Savings:</ThemedText>
         <ThemedText darkColor="#ffffff" style={{ marginBottom: 4 }}>
-          Total Saved: €{calculateTotalSaved().toFixed(2)}
+          Total Saved: {calculateTotalSaved().toFixed(2)}€
         </ThemedText>
         <ThemedText darkColor="#ffffff">
-          Total Saved on Scanned Trips: €{calculateScannedSaved().toFixed(2)}
+          Total Saved on Scanned Trips: {calculateScannedSaved().toFixed(2)}€
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
@@ -176,20 +185,17 @@ export default function HomeScreen() {
         {/* Saved trips will appear here  */}
         <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Saved Trips:</ThemedText>
         {savedTrips.map((trip, index) => (
-          <ThemedView key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, justifyContent: 'space-between' }}>
+          <ThemedView key={index} style={styles.savedTripItem}>
             <ThemedText darkColor="#ffffff">
-              {trip.from} → {trip.to} - €{trip.price}
+              {trip.from} → {trip.to} - {trip.price}€
             </ThemedText>
             <ThemedView style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <Checkbox
                 checked={trip.scanned}
                 onChange={() => toggleScanned(index)}
-                sx={{
-                  color: 'white',
-                  '&.Mui-checked': {
-                    color: 'white',
-                  },
-                }}
+                icon={<CheckboxIcon checked={false} />}
+                checkedIcon={<CheckboxIcon checked={true} />}
+                sx={checkboxStyles}
               />
               <Button
                 variant="contained"
@@ -237,6 +243,39 @@ const textFieldStyles = {
   },
 };
 
+const checkboxStyles = {
+  color: 'white',
+  '&.Mui-checked': {
+    color: 'white',
+  },
+  '& .MuiCheckbox-root': {
+    padding: 0,
+  },
+};
+
+const CheckboxIcon = ({ checked }: { checked: boolean }) => {
+  if (checked) {
+    return <FontAwesomeIcon icon={faTicket} style={{ 
+      color: '#006005', 
+      fontSize: '24px',
+      backgroundColor: '#00BF0C',
+      borderRadius: '4px',
+      padding: '2px',
+      border: '3px solid #006005' 
+    }} />;
+  } else {
+    return <FontAwesomeIcon icon={faTicket} style={{ 
+      color: Colors.dark.cardBackground, 
+      fontSize: '24px',
+      backgroundColor: Colors.dark.background,
+      borderRadius: '4px',
+      padding: '2px',
+      border: '3px solid',
+      borderColor: Colors.dark.cardBackground
+    }} />;
+  }
+};
+
 const linkButtonStyles = { 
   color: '#99CCFF', 
   textTransform: 'none', 
@@ -273,6 +312,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  savedTripItem: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginBottom: 8, 
+    justifyContent: 'space-between',
+    borderRadius: 12,
+    gap: 8,
+    padding: 8,
   }
 
 });
