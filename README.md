@@ -6,7 +6,7 @@ This site tallies up the cost of every DB trip you have taken over the month and
 
 This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.
 
-This is version 2.0.0. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.
+This is version 2.0.1. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.
 
 # Welcome to your Expo app 👋
 

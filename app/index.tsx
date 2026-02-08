@@ -12,10 +12,12 @@ export default function HomeScreen() {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [price, setPrice] = useState('');
-  const [d_ticket_price, setD_ticket_price] = useState('63');
+  const [d_ticket_price, setD_ticket_price] = useState(63);
   const [scanned, setScanned] = useState(false);
   const [expandedAbout, setExpandedAbout] = useState(false);
   const [savedTrips, setSavedTrips] = useState<Array<{ from: string; to: string; price: string; scanned: boolean }>>([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function HomeScreen() {
       setSavedTrips(JSON.parse(savedTripsData));
     }
     if (ticketPriceData) {
-      setD_ticket_price(ticketPriceData);
+      setD_ticket_price(parseFloat(ticketPriceData));
     }
   }, []);
 
@@ -37,8 +39,8 @@ export default function HomeScreen() {
   }, [savedTrips]);
 
   useEffect(() => {
-    localStorage.setItem('d_ticket_price', d_ticket_price);
-  }, [d_ticket_price]);
+    setTotalPrice(savedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0));
+  }, [savedTrips]);
 
   const handleSubmit = () => {
     if (from && to && price) {
@@ -60,17 +62,15 @@ export default function HomeScreen() {
     setSavedTrips(savedTrips.filter((_, i) => i !== index));
   };
 
-  const calculateTotalSaved = () => {
-    const totalPrice = savedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
-    const ticketCost = parseFloat(d_ticket_price) || 63;
-    return totalPrice - ticketCost;
-  };
+  // const calculateTotalSaved = () => {
+  //   const ticketCost = parseFloat(d_ticket_price) || 63;
+  //   return totalPrice - ticketCost;
+  // };
 
   const calculateScannedSaved = () => {
     const scannedTrips = savedTrips.filter(trip => trip.scanned);
     const totalPrice = scannedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
-    const ticketCost = parseFloat(d_ticket_price) || 63;
-    return totalPrice - ticketCost;
+    return totalPrice - d_ticket_price;
   };
 
 
@@ -103,7 +103,7 @@ export default function HomeScreen() {
               This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.
             </ThemedText>
             <ThemedText darkColor="#ffffff">
-              This is version 2.0.0. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.
+              This is version 2.0.1. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.
             </ThemedText>
           </>
         )}
@@ -122,7 +122,11 @@ export default function HomeScreen() {
           type="number"
           variant="standard"
           value={d_ticket_price}
-          onChange={(e) => setD_ticket_price(e.target.value)}
+          onChange={(e) => {
+            const newPrice = parseFloat(e.target.value) || 63;
+            setD_ticket_price(newPrice);
+            localStorage.setItem('d_ticket_price', newPrice.toString());
+          }}
           sx={textFieldStyles}
         />
       </ThemedView>
@@ -171,15 +175,46 @@ export default function HomeScreen() {
         />
         <Button variant="contained" onClick={handleSubmit}>Submit</Button>
       </ThemedView>
+
+      {/* Savings Section */}
       <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
         <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Savings:</ThemedText>
         <ThemedText darkColor="#ffffff" style={{ marginBottom: 4 }}>
-          Total Saved: {calculateTotalSaved().toFixed(2)}€
+          Total Saved: {(totalPrice - d_ticket_price).toFixed(2)}€
         </ThemedText>
         <ThemedText darkColor="#ffffff">
           Total Saved on Scanned Trips: {calculateScannedSaved().toFixed(2)}€
         </ThemedText>
+        <ThemedText darkColor="#ffffff">
+          {(() => {
+            const schwartzFahrerStrafzettelPreis = 60;
+            const caughtSchwartzFahren = savedTrips.filter(trip => trip.scanned).length
+            const schwartzFahren = d_ticket_price - (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis);
+            var returnStr = "Had you not bought any tickets, ";
+            if(schwartzFahren > 0) {
+              return returnStr + "you would have saved " + schwartzFahren.toFixed(2) + "€ and gotten away with " + totalPrice.toFixed(2) + "€ in unpaid fares.";
+            } else {
+              returnStr += "you would have been fined " + caughtSchwartzFahren + " times, totally " + (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis).toFixed(2) + "€ in fines.";
+              
+              //returnStr += " Had you not been caught, you would have saved " + (d_ticket_price + totalPrice).toFixed(2) + "€.";
+              //returnStr += " Instead, you only really got away with ";
+
+              returnStr += " You would have gotten away with ";
+
+              const unscannedTrips = savedTrips.filter(trip => !trip.scanned);
+              const totalunPrice = unscannedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
+
+              returnStr += totalunPrice.toFixed(2) + "€ in unpaid fares.";
+
+              return returnStr;
+            }
+
+          })()}
+        </ThemedText>
       </ThemedView>
+
+
+
       <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
         
         {/* Saved trips will appear here  */}
