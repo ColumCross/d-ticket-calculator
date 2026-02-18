@@ -6,7 +6,10 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
-import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
+import { Checkbox, FormControlLabel, TextField } from '@mui/material';
+
+import Button from '@mui/material/Button';
+
 
 export default function HomeScreen() {
   const [from, setFrom] = useState('');
@@ -14,9 +17,14 @@ export default function HomeScreen() {
   const [price, setPrice] = useState('');
   const [d_ticket_price, setD_ticket_price] = useState(63);
   const [scanned, setScanned] = useState(false);
-  const [expandedAbout, setExpandedAbout] = useState(false);
   const [savedTrips, setSavedTrips] = useState<Array<{ from: string; to: string; price: string; scanned: boolean }>>([]);
   const [totalPrice, setTotalPrice] = useState(0);
+
+  const [expandedAbout, setExpandedAbout] = useState(false);
+  const [aboutModalState, setAboutModalState] = useState(false);
+  const openAboutModal = () => setAboutModalState(true);
+  const closeAboutModal = () => setAboutModalState(false);
+  const [showAbout, setShowAbout] = useState(false);
   
 
   // Load data from localStorage on mount
@@ -91,174 +99,169 @@ export default function HomeScreen() {
         <ThemedText darkColor="#ffffff">
           By <a href="http://columcross.com" target='_blank'>Colum Cross</a>
         </ThemedText>
-      </ThemedView>
-
-      <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-        <ThemedText darkColor="#ffffff">
-          This site tallies up the cost of every DB trip you have taken over the month and tells you how much money you saved by having a Deutschlandticket.
-        </ThemedText>
-        {expandedAbout && (
-          <>
-            <ThemedText darkColor="#ffffff">
-              This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.
-            </ThemedText>
-            <ThemedText darkColor="#ffffff">
-              This is version 2.0.2. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.
-            </ThemedText>
-          </>
-        )}
         <Button 
-          onClick={() => setExpandedAbout(!expandedAbout)}
+          onClick={() => setShowAbout(!showAbout)}
           sx={linkButtonStyles}
         >
-          {expandedAbout ? '...Show less' : 'Show more...'}
+          {showAbout ? '...Back' : 'About...'}
         </Button>
       </ThemedView>
 
-      <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-        <TextField 
-          id="ticket_price" 
-          label="Price of Deutschlandticket (€)" 
-          type="number"
-          variant="standard"
-          value={d_ticket_price}
-          onChange={(e) => {
-            const newPrice = parseFloat(e.target.value) || 63;
-            setD_ticket_price(newPrice);
-            localStorage.setItem('d_ticket_price', newPrice.toString());
-          }}
-          sx={textFieldStyles}
-        />
-      </ThemedView>
-        
-      <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-        <TextField 
-          id="station_from" 
-          label="Origin" 
-          variant="standard"
-          value={from}
-          onChange={(e) => setFrom(e.target.value)}
-          sx={textFieldStyles}
-        />
-        <TextField 
-          id="station_to" 
-          label="Destination" 
-          variant="standard"
-          value={to}
-          onChange={(e) => setTo(e.target.value)}
-          sx={textFieldStyles}
-        />
-        <TextField 
-          id="price" 
-          label="Price" 
-          type="number"
-          variant="standard"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          sx={textFieldStyles}
-        />
-        <FormControlLabel 
-          control={
-            <Checkbox 
-              checked={scanned} 
-              onChange={(e) => setScanned(e.target.checked)}
-              icon={<CheckboxIcon checked={false} />}
-              checkedIcon={<CheckboxIcon checked={true} />}
-              sx={checkboxStyles} 
-            />} 
-          label="Ticket was Scanned"
-          sx={{
-            '& .MuiFormControlLabel-label': {
-              color: 'white',
-            },
-          }}
-        />
-        <Button variant="contained" onClick={handleSubmit}>Submit</Button>
-      </ThemedView>
+      {!showAbout && (<>
 
-      {/* Savings Section */}
-      <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-        <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Savings:</ThemedText>
-        <ThemedText darkColor="#ffffff" style={{ marginBottom: 4 }}>
-          Total Saved: {(totalPrice - d_ticket_price).toFixed(2)}€
-        </ThemedText>
-        <ThemedText darkColor="#ffffff">
-          Total Saved on Scanned Trips: {calculateScannedSaved().toFixed(2)}€
-        </ThemedText>
-        <ThemedText darkColor="#ffffff">
-          {(() => {
-            const schwartzFahrerStrafzettelPreis = 60;
-            const caughtSchwartzFahren = savedTrips.filter(trip => trip.scanned).length
-            const schwartzFahren = d_ticket_price - (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis);
-            var returnStr = "Had you not bought any tickets, ";
-            if(schwartzFahren > 0) {
-              return returnStr + "you would have saved " + schwartzFahren.toFixed(2) + "€ and gotten away with " + totalPrice.toFixed(2) + "€ in unpaid fares.";
-            } else {
-              returnStr += "you would have been fined " + caughtSchwartzFahren + " times, totally " + (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis).toFixed(2) + "€ in fines.";
-              
-              //returnStr += " Had you not been caught, you would have saved " + (d_ticket_price + totalPrice).toFixed(2) + "€.";
-              //returnStr += " Instead, you only really got away with ";
-
-              //returnStr += " You would have gotten away with ";
-
-              // You would have avoided paying €53.00 for trips, €28.00 of which you would have gotten away with.”
-
-              returnStr += " You would have avoided paying ";
-              returnStr += totalPrice.toFixed(2) + "€ for trips, ";
-        
-
-              const unscannedTrips = savedTrips.filter(trip => !trip.scanned);
-              const totalunPrice = unscannedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
-
-              // returnStr += totalunPrice.toFixed(2) + "€ in unpaid fares.";
-              returnStr += totalunPrice.toFixed(2) + "€ of which you would have gotten away with.";
-
-              return returnStr;
-            }
-
-          })()}
-        </ThemedText>
-      </ThemedView>
-
-
-
-      <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-        
-        {/* Saved trips will appear here  */}
-        <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Saved Trips:</ThemedText>
-        {savedTrips.map((trip, index) => (
-          <ThemedView key={index} style={styles.savedTripItem}>
-            <ThemedText darkColor="#ffffff">
-              {trip.from} → {trip.to} - {trip.price}€
-            </ThemedText>
-            <ThemedView style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Checkbox
-                checked={trip.scanned}
-                onChange={() => toggleScanned(index)}
+        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
+          <TextField 
+            id="ticket_price" 
+            label="Price of Deutschlandticket (€)" 
+            type="number"
+            variant="standard"
+            value={d_ticket_price}
+            onChange={(e) => {
+              const newPrice = parseFloat(e.target.value) || 63;
+              setD_ticket_price(newPrice);
+              localStorage.setItem('d_ticket_price', newPrice.toString());
+            }}
+            sx={textFieldStyles}
+          />
+        </ThemedView>
+          
+        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
+          <TextField 
+            id="station_from" 
+            label="Origin" 
+            variant="standard"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+            sx={textFieldStyles}
+          />
+          <TextField 
+            id="station_to" 
+            label="Destination" 
+            variant="standard"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            sx={textFieldStyles}
+          />
+          <TextField 
+            id="price" 
+            label="Price" 
+            type="number"
+            variant="standard"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            sx={textFieldStyles}
+          />
+          <FormControlLabel 
+            control={
+              <Checkbox 
+                checked={scanned} 
+                onChange={(e) => setScanned(e.target.checked)}
                 icon={<CheckboxIcon checked={false} />}
                 checkedIcon={<CheckboxIcon checked={true} />}
-                sx={checkboxStyles}
-              />
-              <Button
-                variant="contained"
-                onClick={() => deleteTrip(index)}
-                sx={{
-                  backgroundColor: '#ff0000',
-                  color: 'white',
-                  minWidth: '40px',
-                  padding: '8px',
-                  '&:hover': {
-                    backgroundColor: '#cc0000',
-                  },
-                }}
-              >
-                X
-              </Button>
+                sx={checkboxStyles} 
+              />} 
+            label="Ticket was Scanned"
+            sx={{
+              '& .MuiFormControlLabel-label': {
+                color: 'white',
+              },
+            }}
+          />
+          <Button variant="contained" onClick={handleSubmit}>Submit</Button>
+        </ThemedView>
+
+        {/* Savings Section */}
+        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
+          <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Savings:</ThemedText>
+          <ThemedText darkColor="#ffffff" style={{ marginBottom: 4 }}>
+            Total Saved: {(totalPrice - d_ticket_price).toFixed(2)}€
+          </ThemedText>
+          <ThemedText darkColor="#ffffff">
+            Total Saved on Scanned Trips: {calculateScannedSaved().toFixed(2)}€
+          </ThemedText>
+          <ThemedText darkColor="#ffffff">
+            {(() => {
+              const schwartzFahrerStrafzettelPreis = 60;
+              const caughtSchwartzFahren = savedTrips.filter(trip => trip.scanned).length
+              const schwartzFahren = d_ticket_price - (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis);
+              var returnStr = "Had you not bought any tickets, ";
+              if(schwartzFahren > 0) {
+                return returnStr + "you would have saved " + schwartzFahren.toFixed(2) + "€ and gotten away with " + totalPrice.toFixed(2) + "€ in unpaid fares.";
+              } else {
+                returnStr += "you would have been fined " + caughtSchwartzFahren + " times, totally " + (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis).toFixed(2) + "€ in fines.";
+                
+                //returnStr += " Had you not been caught, you would have saved " + (d_ticket_price + totalPrice).toFixed(2) + "€.";
+                //returnStr += " Instead, you only really got away with ";
+
+                //returnStr += " You would have gotten away with ";
+
+                // You would have avoided paying €53.00 for trips, €28.00 of which you would have gotten away with.”
+
+                returnStr += " You would have avoided paying ";
+                returnStr += totalPrice.toFixed(2) + "€ for trips, ";
+          
+
+                const unscannedTrips = savedTrips.filter(trip => !trip.scanned);
+                const totalunPrice = unscannedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
+
+                // returnStr += totalunPrice.toFixed(2) + "€ in unpaid fares.";
+                returnStr += totalunPrice.toFixed(2) + "€ of which you would have gotten away with.";
+
+                return returnStr;
+              }
+
+            })()}
+          </ThemedText>
+        </ThemedView>
+
+
+
+        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
+          
+          {/* Saved trips will appear here  */}
+          <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Saved Trips:</ThemedText>
+          {savedTrips.map((trip, index) => (
+            <ThemedView key={index} style={styles.savedTripItem}>
+              <ThemedText darkColor="#ffffff">
+                {trip.from} → {trip.to} - {trip.price}€
+              </ThemedText>
+              <ThemedView style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Checkbox
+                  checked={trip.scanned}
+                  onChange={() => toggleScanned(index)}
+                  icon={<CheckboxIcon checked={false} />}
+                  checkedIcon={<CheckboxIcon checked={true} />}
+                  sx={checkboxStyles}
+                />
+                <Button
+                  variant="contained"
+                  onClick={() => deleteTrip(index)}
+                  sx={{
+                    backgroundColor: '#ff0000',
+                    color: 'white',
+                    minWidth: '40px',
+                    padding: '8px',
+                    '&:hover': {
+                      backgroundColor: '#cc0000',
+                    },
+                  }}
+                >
+                  X
+                </Button>
+              </ThemedView>
             </ThemedView>
+          ))}
+        </ThemedView>
+      </>)}
+      {showAbout && (
+        <>
+          <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
+            <ThemedText darkColor="#ffffff">This site tallies up the cost of every DB trip you have taken over the month and tells you how much money you saved by having a Deutschlandticket.</ThemedText>
+            <ThemedText darkColor="#ffffff">This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.</ThemedText>
+            <ThemedText darkColor="#ffffff">This is version 2.0.3. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.</ThemedText>
           </ThemedView>
-        ))}
-        
-      </ThemedView>
+        </>
+      )}
     </ScrollView>
     </>
   );
