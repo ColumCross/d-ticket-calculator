@@ -8,6 +8,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { Checkbox, FormControlLabel, TextField } from '@mui/material';
 
+import SavingsView from '@/components/SavingsView';
 import Button from '@mui/material/Button';
 
 
@@ -18,12 +19,6 @@ export default function HomeScreen() {
   const [d_ticket_price, setD_ticket_price] = useState(63);
   const [scanned, setScanned] = useState(false);
   const [savedTrips, setSavedTrips] = useState<Array<{ from: string; to: string; price: string; scanned: boolean }>>([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-
-  const [expandedAbout, setExpandedAbout] = useState(false);
-  const [aboutModalState, setAboutModalState] = useState(false);
-  const openAboutModal = () => setAboutModalState(true);
-  const closeAboutModal = () => setAboutModalState(false);
   const [showAbout, setShowAbout] = useState(false);
   
 
@@ -46,10 +41,6 @@ export default function HomeScreen() {
     localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
   }, [savedTrips]);
 
-  useEffect(() => {
-    setTotalPrice(savedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0));
-  }, [savedTrips]);
-
   const handleSubmit = () => {
     if (from && to && price) {
       setSavedTrips([...savedTrips, { from, to, price, scanned }]);
@@ -69,18 +60,6 @@ export default function HomeScreen() {
   const deleteTrip = (index: number) => {
     setSavedTrips(savedTrips.filter((_, i) => i !== index));
   };
-
-  // const calculateTotalSaved = () => {
-  //   const ticketCost = parseFloat(d_ticket_price) || 63;
-  //   return totalPrice - ticketCost;
-  // };
-
-  const calculateScannedSaved = () => {
-    const scannedTrips = savedTrips.filter(trip => trip.scanned);
-    const totalPrice = scannedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
-    return totalPrice - d_ticket_price;
-  };
-
 
   return (
     <>
@@ -170,51 +149,7 @@ export default function HomeScreen() {
           <Button variant="contained" onClick={handleSubmit}>Submit</Button>
         </ThemedView>
 
-        {/* Savings Section */}
-        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-          <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Savings:</ThemedText>
-          <ThemedText darkColor="#ffffff" style={{ marginBottom: 4 }}>
-            Total Saved: {(totalPrice - d_ticket_price).toFixed(2)}€
-          </ThemedText>
-          <ThemedText darkColor="#ffffff">
-            Total Saved on Scanned Trips: {calculateScannedSaved().toFixed(2)}€
-          </ThemedText>
-          <ThemedText darkColor="#ffffff">
-            {(() => {
-              const schwartzFahrerStrafzettelPreis = 60;
-              const caughtSchwartzFahren = savedTrips.filter(trip => trip.scanned).length
-              const schwartzFahren = d_ticket_price - (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis);
-              var returnStr = "Had you not bought any tickets, ";
-              if(schwartzFahren > 0) {
-                return returnStr + "you would have saved " + schwartzFahren.toFixed(2) + "€ and gotten away with " + totalPrice.toFixed(2) + "€ in unpaid fares.";
-              } else {
-                returnStr += "you would have been fined " + caughtSchwartzFahren + " times, totally " + (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis).toFixed(2) + "€ in fines.";
-                
-                //returnStr += " Had you not been caught, you would have saved " + (d_ticket_price + totalPrice).toFixed(2) + "€.";
-                //returnStr += " Instead, you only really got away with ";
-
-                //returnStr += " You would have gotten away with ";
-
-                // You would have avoided paying €53.00 for trips, €28.00 of which you would have gotten away with.”
-
-                returnStr += " You would have avoided paying ";
-                returnStr += totalPrice.toFixed(2) + "€ for trips, ";
-          
-
-                const unscannedTrips = savedTrips.filter(trip => !trip.scanned);
-                const totalunPrice = unscannedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
-
-                // returnStr += totalunPrice.toFixed(2) + "€ in unpaid fares.";
-                returnStr += totalunPrice.toFixed(2) + "€ of which you would have gotten away with.";
-
-                return returnStr;
-              }
-
-            })()}
-          </ThemedText>
-        </ThemedView>
-
-
+        <SavingsView savedTrips={savedTrips} ticketPrice={d_ticket_price} />
 
         <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
           
