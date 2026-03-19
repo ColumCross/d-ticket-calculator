@@ -8,7 +8,9 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { Checkbox, FormControlLabel, TextField } from '@mui/material';
 
+import QuickTicket from '@/components/QuickTicket';
 import SavingsView from '@/components/SavingsView';
+import StationSearchBar from '@/components/StationSearchBar';
 import Button from '@mui/material/Button';
 
 
@@ -18,7 +20,7 @@ export default function HomeScreen() {
   const [price, setPrice] = useState('');
   const [d_ticket_price, setD_ticket_price] = useState(63);
   const [scanned, setScanned] = useState(false);
-  const [savedTrips, setSavedTrips] = useState<Array<{ from: string; to: string; price: string; scanned: boolean }>>([]);
+  const [savedTrips, setSavedTrips] = useState<Array<{ from: string; to?: string; price: string; scanned: boolean }>>([]);
   const [showAbout, setShowAbout] = useState(false);
   
 
@@ -103,23 +105,31 @@ export default function HomeScreen() {
             sx={textFieldStyles}
           />
         </ThemedView>
-          
+
+         {/* Quick Ticket Adds */}
         <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-          <TextField 
+          <ThemedText type="subtitle" darkColor="#ffffff">Quick Add:</ThemedText>
+          <ThemedView style={{ flexDirection: 'row', gap: 8 }}>
+            <QuickTicket name="BVG Full" price={4} onQuickAdd={(trip) => setSavedTrips([...savedTrips, trip])} />
+            <QuickTicket name="BVG Short" price={2.80} onQuickAdd={(trip) => setSavedTrips([...savedTrips, trip])} />
+          </ThemedView>
+        </ThemedView>
+
+          
+          {/* Ticket Section */}
+        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
+          <ThemedText type="subtitle" darkColor="#ffffff">Enter a custom trip:</ThemedText>
+          <StationSearchBar 
             id="station_from" 
             label="Origin" 
-            variant="standard"
             value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            sx={textFieldStyles}
+            onChange={(value) => setFrom(value ?? '')}
           />
-          <TextField 
+          <StationSearchBar 
             id="station_to" 
             label="Destination" 
-            variant="standard"
             value={to}
-            onChange={(e) => setTo(e.target.value)}
-            sx={textFieldStyles}
+            onChange={(value) => setTo(value ?? '')}
           />
           <TextField 
             id="price" 
@@ -158,7 +168,7 @@ export default function HomeScreen() {
           {savedTrips.map((trip, index) => (
             <ThemedView key={index} style={styles.savedTripItem}>
               <ThemedText darkColor="#ffffff">
-                {trip.from} → {trip.to} - {trip.price}€
+                {trip.from}{trip.to && ` → ${trip.to}`} - {trip.price}€
               </ThemedText>
               <ThemedView style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <Checkbox

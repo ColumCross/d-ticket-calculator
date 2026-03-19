@@ -4,7 +4,7 @@ import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
 
 type Props = {
-  savedTrips: Array<{ from: string; to: string; price: string; scanned: boolean }>;
+  savedTrips: Array<{ from: string; to?: string; price: string; scanned: boolean }>;
   ticketPrice: number;
 };
 
