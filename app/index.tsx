@@ -1,13 +1,15 @@
 import { faTicket } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { checkboxStyles, linkButtonStyles, styles, textFieldStyles } from '@/constants/commonStyles';
 import { Colors } from '@/constants/theme';
 import { Checkbox, FormControlLabel, TextField } from '@mui/material';
 
+import CardView from '@/components/CardView';
 import QuickTicket from '@/components/QuickTicket';
 import SavingsView from '@/components/SavingsView';
 import StationSearchBar from '@/components/StationSearchBar';
@@ -75,9 +77,9 @@ export default function HomeScreen() {
         }
       `}</style>
       <ScrollView style={styles.container}>
-      <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-        <ThemedText type="title" darkColor="#ffffff">Deutschlandticket Calculator</ThemedText>
-        <ThemedText darkColor="#ffffff">
+      <CardView>
+        <ThemedText type="title">Deutschlandticket Calculator</ThemedText>
+        <ThemedText>
           By <a href="http://columcross.com" target='_blank'>Colum Cross</a>
         </ThemedText>
         <Button 
@@ -86,11 +88,11 @@ export default function HomeScreen() {
         >
           {showAbout ? '...Back' : 'About...'}
         </Button>
-      </ThemedView>
+      </CardView>
 
       {!showAbout && (<>
 
-        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
+        <CardView>
           <TextField 
             id="ticket_price" 
             label="Price of Deutschlandticket (€)" 
@@ -104,21 +106,21 @@ export default function HomeScreen() {
             }}
             sx={textFieldStyles}
           />
-        </ThemedView>
+        </CardView>
 
          {/* Quick Ticket Adds */}
-        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-          <ThemedText type="subtitle" darkColor="#ffffff">Quick Add:</ThemedText>
+        <CardView>
+          <ThemedText type="subtitle">Quick Add:</ThemedText>
           <ThemedView style={{ flexDirection: 'row', gap: 8 }}>
             <QuickTicket name="BVG Full" price={4} onQuickAdd={(trip) => setSavedTrips([...savedTrips, trip])} />
             <QuickTicket name="BVG Short" price={2.80} onQuickAdd={(trip) => setSavedTrips([...savedTrips, trip])} />
           </ThemedView>
-        </ThemedView>
+        </CardView>
 
           
           {/* Ticket Section */}
-        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-          <ThemedText type="subtitle" darkColor="#ffffff">Enter a custom trip:</ThemedText>
+        <CardView>
+          <ThemedText type="subtitle">Enter a custom trip:</ThemedText>
           <StationSearchBar 
             id="station_from" 
             label="Origin" 
@@ -157,17 +159,18 @@ export default function HomeScreen() {
             }}
           />
           <Button variant="contained" onClick={handleSubmit}>Submit</Button>
-        </ThemedView>
+        </CardView>
 
+        {/* Savings Section */}
         <SavingsView savedTrips={savedTrips} ticketPrice={d_ticket_price} />
 
-        <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
+        <CardView>
           
           {/* Saved trips will appear here  */}
-          <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Saved Trips:</ThemedText>
+          <ThemedText style={{ marginBottom: 8 }}>Saved Trips:</ThemedText>
           {savedTrips.map((trip, index) => (
             <ThemedView key={index} style={styles.savedTripItem}>
-              <ThemedText darkColor="#ffffff">
+              <ThemedText>
                 {trip.from}{trip.to && ` → ${trip.to}`} - {trip.price}€
               </ThemedText>
               <ThemedView style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -196,21 +199,23 @@ export default function HomeScreen() {
               </ThemedView>
             </ThemedView>
           ))}
-        </ThemedView>
+        </CardView>
       </>)}
       {showAbout && (
         <>
-          <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-            <ThemedText darkColor="#ffffff">This site tallies up the cost of every DB trip you have taken over the month and tells you how much money you saved by having a Deutschlandticket.</ThemedText>
-            <ThemedText darkColor="#ffffff">This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.</ThemedText>
-            <ThemedText darkColor="#ffffff">This is version 2.0.3. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.</ThemedText>
-          </ThemedView>
+          <CardView>
+            <ThemedText>This site tallies up the cost of every DB trip you have taken over the month and tells you how much money you saved by having a Deutschlandticket.</ThemedText>
+            <ThemedText>This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.</ThemedText>
+            <ThemedText>This is version 2.0.3. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.</ThemedText>
+          </CardView>
         </>
       )}
     </ScrollView>
     </>
   );
 }
+
+/*
 
 const textFieldStyles = {
   '& .MuiInputBase-input': {
@@ -242,6 +247,7 @@ const checkboxStyles = {
     padding: 0,
   },
 };
+*/
 
 const CheckboxIcon = ({ checked }: { checked: boolean }) => {
   if (checked) {
@@ -266,6 +272,7 @@ const CheckboxIcon = ({ checked }: { checked: boolean }) => {
   }
 };
 
+/*
 const linkButtonStyles = { 
   color: '#99CCFF', 
   textTransform: 'none', 

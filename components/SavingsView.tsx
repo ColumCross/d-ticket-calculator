@@ -1,7 +1,5 @@
-import { Colors } from '@/constants/theme';
-import { StyleSheet } from 'react-native';
+import CardView from './CardView';
 import { ThemedText } from "./themed-text";
-import { ThemedView } from "./themed-view";
 
 type Props = {
   savedTrips: Array<{ from: string; to?: string; price: string; scanned: boolean }>;
@@ -19,15 +17,15 @@ export default function SavingsView({ savedTrips, ticketPrice }: Props) {
     };
 
   return (
-    <ThemedView style={styles.cardContainer} darkColor={Colors.dark.cardBackground}>
-        <ThemedText darkColor="#ffffff" style={{ marginBottom: 8 }}>Savings:</ThemedText>
-        <ThemedText darkColor="#ffffff" style={{ marginBottom: 4 }}>
+    <CardView>
+        <ThemedText style={{ marginBottom: 8 }}>Savings:</ThemedText>
+        <ThemedText style={{ marginBottom: 4 }}>
         Total Saved: {(totalPrice - ticketPrice).toFixed(2)}€
         </ThemedText>
-        <ThemedText darkColor="#ffffff">
+        <ThemedText>
         Total Saved on Scanned Trips: {calculateScannedSaved().toFixed(2)}€
         </ThemedText>
-        <ThemedText darkColor="#ffffff">
+        <ThemedText>
         {(() => {
             const schwartzFahrerStrafzettelPreis = 60;
             const caughtSchwartzFahren = savedTrips.filter(trip => trip.scanned).length
@@ -60,47 +58,6 @@ export default function SavingsView({ savedTrips, ticketPrice }: Props) {
 
         })()}
         </ThemedText>
-    </ThemedView>
+    </CardView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: Colors.dark.background,
-  },
-  cardContainer: {
-    padding: 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    gap: 8,
-    backgroundColor: Colors.dark.cardBackground,
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-  savedTripItem: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    marginBottom: 8, 
-    justifyContent: 'space-between',
-    borderRadius: 12,
-    gap: 8,
-    padding: 8,
-  }
-
-});
