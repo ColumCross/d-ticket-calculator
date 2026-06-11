@@ -9,32 +9,32 @@ type Props = {
 export default function SavingsView({ savedTrips, ticketPrice }: Props) {
 
     const totalPrice = savedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
+
+    const calculateCostScanned = () => {
+        const scannedTrips = savedTrips.filter(trip => trip.scanned);
+        return scannedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
+    }
     
     const calculateScannedSaved = () => {
-        const scannedTrips = savedTrips.filter(trip => trip.scanned);
-        const totalPrice = scannedTrips.reduce((sum, trip) => sum + (parseFloat(trip.price) || 0), 0);
-        return totalPrice - ticketPrice;
+        return calculateCostScanned() - ticketPrice;
     };
 
   return (
     <CardView>
         <ThemedText style={{ marginBottom: 8 }}>Savings:</ThemedText>
-        <ThemedText style={{ marginBottom: 4 }}>
-        Total Saved: {(totalPrice - ticketPrice).toFixed(2)}€
-        </ThemedText>
-        <ThemedText>
-        Total Saved on Scanned Trips: {calculateScannedSaved().toFixed(2)}€
-        </ThemedText>
+        <ThemedText style={{ marginBottom: 4 }}>Total Saved: {(totalPrice - ticketPrice).toFixed(2)}€</ThemedText>
+        <ThemedText>Total Saved on Scanned Trips: {calculateScannedSaved().toFixed(2)}€</ThemedText>
         <ThemedText>
         {(() => {
             const schwartzFahrerStrafzettelPreis = 60;
             const caughtSchwartzFahren = savedTrips.filter(trip => trip.scanned).length
-            const schwartzFahren = ticketPrice - (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis);
+            const fineTotal = ((caughtSchwartzFahren * schwartzFahrerStrafzettelPreis) + calculateCostScanned())
+            const schwartzFahren = ticketPrice - fineTotal;
             var returnStr = "Had you not bought any tickets, ";
             if(schwartzFahren > 0) {
             return returnStr + "you would have saved " + schwartzFahren.toFixed(2) + "€ and gotten away with " + totalPrice.toFixed(2) + "€ in unpaid fares.";
             } else {
-            returnStr += "you would have been fined " + caughtSchwartzFahren + " times, totally " + (caughtSchwartzFahren * schwartzFahrerStrafzettelPreis).toFixed(2) + "€ in fines.";
+            returnStr += "you would have been fined " + caughtSchwartzFahren + " times, totally " + fineTotal.toFixed(2) + "€ in fines.";
             
             //returnStr += " Had you not been caught, you would have saved " + (d_ticket_price + totalPrice).toFixed(2) + "€.";
             //returnStr += " Instead, you only really got away with ";
