@@ -1,9 +1,11 @@
 import { Colors } from '@/constants/theme';
-import { StyleSheet, useColorScheme } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const useThemedStyles = () => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  // Temporarily force dark mode while retaining the future system-theme switch.
+  // const colorScheme = useColorScheme();
+  // const isDark = colorScheme === 'dark';
+  const isDark = true;
   const colors = isDark ? Colors.dark : Colors.light;
 
   return StyleSheet.create({

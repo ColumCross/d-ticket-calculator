@@ -1,4 +1,4 @@
-import { StyleSheet, Text, type TextProps, useColorScheme } from 'react-native';
+import { StyleSheet, Text, type TextProps } from 'react-native';
 
 import { Colors } from '@/constants/theme';
 
@@ -11,8 +11,10 @@ export function ThemedText({
   type = 'default',
   ...rest
 }: ThemedTextProps) {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  // Temporarily force dark mode while retaining the future system-theme switch.
+  // const colorScheme = useColorScheme();
+  // const isDark = colorScheme === 'dark';
+  const isDark = true;
   const colors = isDark ? Colors.dark : Colors.light;
   const color = colors.text;
 

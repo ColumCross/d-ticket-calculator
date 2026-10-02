@@ -2,7 +2,7 @@ import CardView from './CardView';
 import { ThemedText } from "./themed-text";
 
 type Props = {
-  savedTrips: Array<{ from: string; to?: string; price: string; scanned: boolean }>;
+  savedTrips: { from: string; to?: string; price: string; scanned: boolean }[];
   ticketPrice: number;
 };
 
@@ -30,7 +30,7 @@ export default function SavingsView({ savedTrips, ticketPrice }: Props) {
             const caughtSchwartzFahren = savedTrips.filter(trip => trip.scanned).length
             const fineTotal = ((caughtSchwartzFahren * schwartzFahrerStrafzettelPreis) + calculateCostScanned())
             const schwartzFahren = ticketPrice - fineTotal;
-            var returnStr = "Had you not bought any tickets, ";
+            let returnStr = "Had you not bought any tickets, ";
             if(schwartzFahren > 0) {
             return returnStr + "you would have saved " + schwartzFahren.toFixed(2) + "€ and gotten away with " + totalPrice.toFixed(2) + "€ in unpaid fares.";
             } else {

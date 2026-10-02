@@ -20,24 +20,28 @@ export default function HomeScreen() {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [price, setPrice] = useState('');
-  const [d_ticket_price, setD_ticket_price] = useState(63);
+  const [d_ticket_price, setD_ticket_price] = useState(() => {
+    if (typeof localStorage === 'undefined') {
+      return 63;
+    }
+
+    const ticketPriceData = localStorage.getItem('d_ticket_price');
+    return ticketPriceData ? parseFloat(ticketPriceData) : 63;
+  });
   const [scanned, setScanned] = useState(false);
-  const [savedTrips, setSavedTrips] = useState<Array<{ from: string; to?: string; price: string; scanned: boolean }>>([]);
+  const [savedTrips, setSavedTrips] = useState<{ from: string; to?: string; price: string; scanned: boolean }[]>(() => {
+    if (typeof localStorage === 'undefined') {
+      return [];
+    }
+
+    const savedTripsData = localStorage.getItem('savedTrips');
+    return savedTripsData ? JSON.parse(savedTripsData) : [];
+  });
   const [showAbout, setShowAbout] = useState(false);
   
 
-  // Load data from localStorage on mount
   useEffect(() => {
     document.title = 'Deutschlandticket Calculator';
-    const savedTripsData = localStorage.getItem('savedTrips');
-    const ticketPriceData = localStorage.getItem('d_ticket_price');
-    
-    if (savedTripsData) {
-      setSavedTrips(JSON.parse(savedTripsData));
-    }
-    if (ticketPriceData) {
-      setD_ticket_price(parseFloat(ticketPriceData));
-    }
   }, []);
 
   // Save data to localStorage whenever savedTrips or d_ticket_price changes
@@ -206,7 +210,7 @@ export default function HomeScreen() {
           <CardView>
             <ThemedText>This site tallies up the cost of every DB trip you have taken over the month and tells you how much money you saved by having a Deutschlandticket.</ThemedText>
             <ThemedText>This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.</ThemedText>
-            <ThemedText>This is version 2.0.3. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered "strictly necessary" and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.</ThemedText>
+            <ThemedText>This is version 2.0.3. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered &quot;strictly necessary&quot; and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.</ThemedText>
           </CardView>
         </>
       )}
