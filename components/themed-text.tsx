@@ -1,6 +1,7 @@
 import { StyleSheet, Text, type TextProps } from 'react-native';
 
 import { Colors } from '@/constants/theme';
+import { useThemeScheme } from '@/hooks/use-theme-color';
 
 export type ThemedTextProps = TextProps & {
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
@@ -11,17 +12,12 @@ export function ThemedText({
   type = 'default',
   ...rest
 }: ThemedTextProps) {
-  // Temporarily force dark mode while retaining the future system-theme switch.
-  // const colorScheme = useColorScheme();
-  // const isDark = colorScheme === 'dark';
-  const isDark = true;
-  const colors = isDark ? Colors.dark : Colors.light;
-  const color = colors.text;
+  const themeStyles = colorStyles[useThemeScheme()];
 
   return (
     <Text
       style={[
-        { color },
+        type === 'link' ? themeStyles.link : themeStyles.text,
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
@@ -56,6 +52,16 @@ const styles = StyleSheet.create({
   link: {
     lineHeight: 30,
     fontSize: 16,
-    color: '#0a7ea4',
   },
 });
+
+const colorStyles = {
+  dark: StyleSheet.create({
+    text: { color: Colors.dark.text },
+    link: { color: Colors.dark.link },
+  }),
+  light: StyleSheet.create({
+    text: { color: Colors.light.text },
+    link: { color: Colors.light.link },
+  }),
+};

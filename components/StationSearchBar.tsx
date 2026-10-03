@@ -29,7 +29,6 @@ export default function StationSearchBar({ value, onChange, label, ...props }: S
             }
           }}
           {...props}
-          sx={textFieldStyles}
           renderInput={(params) => 
             <TextField 
                 {...params}
@@ -39,24 +38,3 @@ export default function StationSearchBar({ value, onChange, label, ...props }: S
         />
     );
 }
-
-const textFieldStyles = {
-  '& .MuiInputBase-input': {
-    color: 'white',
-  },
-  '& .MuiInput-underline:before': {
-    borderBottomColor: 'white',
-  },
-  '& .MuiInput-underline:hover:before': {
-    borderBottomColor: 'white',
-  },
-  '& .MuiInput-underline:after': {
-    borderBottomColor: 'white',
-  },
-  '& .MuiInputBase-formLabel': {
-    color: 'white',
-  },
-  '& .MuiFormLabel-root': {
-    color: 'white',
-  },
-};

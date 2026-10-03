@@ -1,16 +1,17 @@
 import { View, type ViewProps } from 'react-native';
 
 import { Colors } from '@/constants/theme';
+import { useThemeScheme } from '@/hooks/use-theme-color';
 
 export type ThemedViewProps = ViewProps;
 
 export function ThemedView({ style, ...otherProps }: ThemedViewProps) {
-  // Temporarily force dark mode while retaining the future system-theme switch.
-  // const colorScheme = useColorScheme();
-  // const isDark = colorScheme === 'dark';
-  const isDark = true;
-  const colors = isDark ? Colors.dark : Colors.light;
-  const backgroundColor = colors.background;
+  const backgroundStyle = styles[useThemeScheme()];
 
-  return <View style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <View style={[backgroundStyle, style]} {...otherProps} />;
 }
+
+const styles = {
+  dark: { backgroundColor: Colors.dark.background },
+  light: { backgroundColor: Colors.light.background },
+};

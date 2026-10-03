@@ -1,4 +1,4 @@
-import { styles } from '@/constants/commonStyles';
+import { useThemedStyles } from '@/constants/commonStyles';
 import { ThemedView } from "./themed-view";
 
 type Props = {
@@ -6,6 +6,8 @@ type Props = {
 };
 
 export default function CardView({ children }: Props) {
+    const styles = useThemedStyles();
+
     return (
         <ThemedView style={styles.cardContainer}>
             {children}

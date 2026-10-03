@@ -5,8 +5,8 @@ import { ScrollView } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { checkboxStyles, linkButtonStyles, styles, textFieldStyles } from '@/constants/commonStyles';
-import { Colors } from '@/constants/theme';
+import { useThemedStyles } from '@/constants/commonStyles';
+import { useThemeColors } from '@/hooks/use-theme-color';
 import { Checkbox, FormControlLabel, TextField } from '@mui/material';
 
 import CardView from '@/components/CardView';
@@ -17,6 +17,8 @@ import Button from '@mui/material/Button';
 
 
 export default function HomeScreen() {
+  const colors = useThemeColors();
+  const styles = useThemedStyles();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [price, setPrice] = useState('');
@@ -73,11 +75,11 @@ export default function HomeScreen() {
     <>
       <style>{`
         a, a:visited, a:active {
-          color: #99CCFF;
+          color: ${colors.link};
           text-decoration: underline;
         }
         a:hover {
-          color: #99CCFF;
+          color: ${colors.link};
         }
       `}</style>
       <ScrollView style={styles.container}>
@@ -88,7 +90,13 @@ export default function HomeScreen() {
         </ThemedText>
         <Button 
           onClick={() => setShowAbout(!showAbout)}
-          sx={linkButtonStyles}
+          sx={{
+            color: colors.link,
+            textTransform: 'none',
+            padding: 0,
+            justifyContent: 'flex-start',
+            textDecoration: 'underline',
+          }}
         >
           {showAbout ? '...Back' : 'About...'}
         </Button>
@@ -108,7 +116,6 @@ export default function HomeScreen() {
               setD_ticket_price(newPrice);
               localStorage.setItem('d_ticket_price', newPrice.toString());
             }}
-            sx={textFieldStyles}
           />
         </CardView>
 
@@ -144,23 +151,16 @@ export default function HomeScreen() {
             variant="standard"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            sx={textFieldStyles}
           />
-          <FormControlLabel 
+          <FormControlLabel
             control={
               <Checkbox 
                 checked={scanned} 
                 onChange={(e) => setScanned(e.target.checked)}
                 icon={<CheckboxIcon checked={false} />}
                 checkedIcon={<CheckboxIcon checked={true} />}
-                sx={checkboxStyles} 
               />} 
             label="Ticket was Scanned"
-            sx={{
-              '& .MuiFormControlLabel-label': {
-                color: 'white',
-              },
-            }}
           />
           <Button variant="contained" onClick={handleSubmit}>Submit</Button>
         </CardView>
@@ -183,20 +183,12 @@ export default function HomeScreen() {
                   onChange={() => toggleScanned(index)}
                   icon={<CheckboxIcon checked={false} />}
                   checkedIcon={<CheckboxIcon checked={true} />}
-                  sx={checkboxStyles}
                 />
                 <Button
                   variant="contained"
                   onClick={() => deleteTrip(index)}
-                  sx={{
-                    backgroundColor: '#ff0000',
-                    color: 'white',
-                    minWidth: '40px',
-                    padding: '8px',
-                    '&:hover': {
-                      backgroundColor: '#cc0000',
-                    },
-                  }}
+                  color="error"
+                  sx={{ minWidth: '40px', padding: '8px' }}
                 >
                   X
                 </Button>
@@ -210,7 +202,9 @@ export default function HomeScreen() {
           <CardView>
             <ThemedText>This site tallies up the cost of every DB trip you have taken over the month and tells you how much money you saved by having a Deutschlandticket.</ThemedText>
             <ThemedText>This application is being built on the first principles of iterative software development, starting with the most fundemental Minimum Viable Product (MVP) as outlined in the Design of Everyday Things. While there is a roadmap and North Star for this project, it is starting at nothing.</ThemedText>
-            <ThemedText>This is version 2.0.3. The application has now been rebuilt in React. In this version you are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered &quot;strictly necessary&quot; and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.</ThemedText>
+            <ThemedText>This is version 2.0.5. The application has now been rebuilt in React.</ThemedText>
+            <ThemedText>You are able to manually calculate the savings you have generated on your D-Ticket. The fares you enter are saved in your browser. Since this is an essential aspect of the website, and the data does not contain any personal information, the data stored is considered &quot;strictly necessary&quot; and therefore does not require consent under the GDPR and EPD. You can add and remove the fares you enter from the list.</ThemedText>
+            <ThemedText>I've added theme switching support. The application now detects whether your system is in light or dark mode and automatically adapts accordingly.</ThemedText>
           </CardView>
         </>
       )}
@@ -219,174 +213,27 @@ export default function HomeScreen() {
   );
 }
 
-/*
-
-const textFieldStyles = {
-  '& .MuiInputBase-input': {
-    color: 'white',
-  },
-  '& .MuiInput-underline:before': {
-    borderBottomColor: 'white',
-  },
-  '& .MuiInput-underline:hover:before': {
-    borderBottomColor: 'white',
-  },
-  '& .MuiInput-underline:after': {
-    borderBottomColor: 'white',
-  },
-  '& .MuiInputBase-formLabel': {
-    color: 'white',
-  },
-  '& .MuiFormLabel-root': {
-    color: 'white',
-  },
-};
-
-const checkboxStyles = {
-  color: 'white',
-  '&.Mui-checked': {
-    color: 'white',
-  },
-  '& .MuiCheckbox-root': {
-    padding: 0,
-  },
-};
-*/
-
 const CheckboxIcon = ({ checked }: { checked: boolean }) => {
+  const colors = useThemeColors();
+
   if (checked) {
     return <FontAwesomeIcon icon={faTicket} style={{ 
-      color: '#006005', 
+      color: colors.ticketChecked,
       fontSize: '24px',
-      backgroundColor: '#00BF0C',
+      backgroundColor: colors.ticketCheckedBg,
       borderRadius: '4px',
       padding: '2px',
-      border: '3px solid #006005' 
+      border: `3px solid ${colors.ticketChecked}`,
     }} />;
   } else {
     return <FontAwesomeIcon icon={faTicket} style={{ 
-      color: Colors.dark.cardBackground, 
+      color: colors.ticketUnchecked,
       fontSize: '24px',
-      backgroundColor: Colors.dark.background,
+      backgroundColor: colors.background,
       borderRadius: '4px',
       padding: '2px',
       border: '3px solid',
-      borderColor: Colors.dark.cardBackground
+      borderColor: colors.ticketUnchecked,
     }} />;
   }
 };
-
-/*
-const linkButtonStyles = { 
-  color: '#99CCFF', 
-  textTransform: 'none', 
-  padding: 0, 
-  justifyContent: 'flex-start',
-  textDecoration: 'underline'
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: Colors.dark.background,
-  },
-  cardContainer: {
-    padding: 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    gap: 8,
-    backgroundColor: Colors.dark.cardBackground,
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-  savedTripItem: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    marginBottom: 8, 
-    justifyContent: 'space-between',
-    borderRadius: 12,
-    gap: 8,
-    padding: 8,
-  }
-
-});
-
-
-/*
-
-//import 'db-prices';
-//import 'db-stations-autocomplete';
-import { useState } from "react";
-import { Text, View } from "react-native";
-
-// for (const station of ReadableStations()) {
-//  	console.log(station);
-// }
-
-export default function Index() {
-
-  const [globalVariable, setGlobalVariable] = useState<String>("Hello World");
-
-
-  //var globalVariable = "Hello World";
-
-  const buttonTest = () => {
-    console.log("Button clicked new");
-    setGlobalVariable(globalVariable + " new");
-    console.log(globalVariable);
-    
-    /*
-    const prices = require('db-prices')
-    prices('8000105', '8011160').then(
-      (prices: any) => {
-        console.log(prices);
-      }
-    ).catch(
-      (error: any) => {
-        console.log(error);
-      }
-    )
-    *
-
-  }
-
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-      <h1>Hello World</h1>
-      <p>{globalVariable}</p>
-      <p>This is a test</p>
-      <button onClick={buttonTest}>Click me</button>
-      <input type="text" placeholder="Enter your name" />
-      <select>
-        <option value="1">Option 1</option>
-        <option value="2">Option 2</option>
-        <option value="3">Option 3</option>
-      </select>
-    </View>
-  );
-}
-
-*/

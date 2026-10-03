@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/placeholder_logo.png",
     "scheme": "dbpricetest",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true
     },

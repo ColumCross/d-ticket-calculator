@@ -1,19 +1,28 @@
-/**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
- */
+import { Colors, type ThemeColors } from '@/constants/theme';
+import { createContext, createElement, useContext, type ReactNode } from 'react';
+import { Platform, useColorScheme } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+const ThemeColorsContext = createContext<ThemeColors>(Colors.dark);
 
-export function useThemeColor(
-  props: { dark?: string },
-  colorName: keyof typeof Colors.dark
-) {
-  const colorFromProps = props.dark;
+export function AppThemeProvider({ children }: { children: ReactNode }) {
+  const colorScheme = useColorScheme();
+  const prefersLight = Platform.OS === 'web'
+    ? typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-color-scheme: light)').matches
+    : colorScheme === 'light';
 
-  if (colorFromProps) {
-    return colorFromProps;
-  } else {
-    return Colors.dark[colorName];
-  }
+  return createElement(
+    ThemeColorsContext.Provider,
+    { value: prefersLight ? Colors.light : Colors.dark },
+    children,
+  );
+}
+
+export function useThemeColors(): ThemeColors {
+  return useContext(ThemeColorsContext);
+}
+
+export function useThemeScheme() {
+  return useThemeColors() === Colors.light ? 'light' : 'dark';
 }
